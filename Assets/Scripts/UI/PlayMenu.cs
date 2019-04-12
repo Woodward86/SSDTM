@@ -23,7 +23,7 @@ public class PlayMenu : MonoBehaviour
 
     public void TwoPlayerGame()
     {
-        gameManager.GetComponent<PlayerSpawner>().numberOfPlayers = 2;
+        gameManager.GetComponent<PlayerSpawner>().numberOfPlayers = 4;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 

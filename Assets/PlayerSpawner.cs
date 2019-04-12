@@ -14,11 +14,21 @@ public class PlayerSpawner : MonoBehaviour
     }
 
 
-    void OnLevelWasLoaded()
+    private void OnEnable()
     {
-        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.sceneLoaded += OnLevelLoaded; 
+    }
 
-        if (currentScene.name != "Menu")
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnLevelLoaded;
+    }
+
+
+    void OnLevelLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name != "Menu")
         {
             isStarted = true;
             Invoke("SpawnPlayer", .1f);
@@ -32,10 +42,10 @@ public class PlayerSpawner : MonoBehaviour
         {
             for (int i = 0; i < numberOfPlayers; i++)
             {
-                int playerNumber = i + 1;
-
                 GameObject playerClone = Instantiate(player, player.transform.position, Quaternion.identity);
 
+                int playerNumber = i + 1;
+                               
                 playerClone.GetComponent<PlayerController>().jumpButton = "Jump_P" + playerNumber.ToString();
                 playerClone.GetComponent<PlayerController>().horizontalCtrl = "Horizontal_P" + playerNumber.ToString();
             }
