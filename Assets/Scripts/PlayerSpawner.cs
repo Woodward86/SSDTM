@@ -40,14 +40,17 @@ public class PlayerSpawner : MonoBehaviour
     {
         if (isStarted)
         {
-            for (int i = 0; i < numberOfPlayers; i++)
+            if (numberOfPlayers > 0)
             {
-                GameObject playerClone = Instantiate(player, player.transform.position, Quaternion.identity);
+                for (int i = 0; i < numberOfPlayers; i++)
+                {
+                    GameObject playerClone = Instantiate(player, player.transform.position, Quaternion.identity);
 
-                int playerNumber = i + 1;
-                               
-                playerClone.GetComponent<PlayerController>().jumpButton = "Jump_P" + playerNumber.ToString();
-                playerClone.GetComponent<PlayerController>().horizontalCtrl = "Horizontal_P" + playerNumber.ToString();
+                    int playerNumber = i + 1;
+
+                    playerClone.GetComponent<PlayerController>().jumpButton = "Jump_P" + playerNumber.ToString();
+                    playerClone.GetComponent<PlayerController>().horizontalCtrl = "Horizontal_P" + playerNumber.ToString();
+                }
             }
         }
     }

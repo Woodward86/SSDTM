@@ -14,8 +14,8 @@ public class PlayerController : MonoBehaviour
 
     //input
     public bool useController;
-    public string jumpButton = "Jump_P1";
-    public string horizontalCtrl = "Horizontal_P1";
+    public string jumpButton = "Jump";
+    public string horizontalCtrl = "Horizontal";
 
     //movement
     private Vector3 velocity = Vector3.zero;
