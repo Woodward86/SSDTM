@@ -35,6 +35,7 @@ public class MenuButtonFunctions : MonoBehaviour
     public void SettingsMenu()
     {
         Debug.Log("Launching the settings menu");
+        // Can't use SetActive this way.  If the menu is not active you cannot access this attribute
         mainMenu.SetActive(false);
         settingsMenu.SetActive(true);
     }
@@ -43,6 +44,7 @@ public class MenuButtonFunctions : MonoBehaviour
     public void GoBack()
     {
         Debug.Log("Going to the previous menu");
+        // Can't use SetActive this way.  If the menu is not active you cannot access this attribute
         settingsMenu.SetActive(false);
         mainMenu.SetActive(true);
     }

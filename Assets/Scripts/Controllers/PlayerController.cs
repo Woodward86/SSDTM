@@ -19,16 +19,22 @@ public class PlayerController : MonoBehaviour
 
     //movement
     private Vector3 velocity = Vector3.zero;
-    float horizontalVelocity;
-    float verticalVelocity;
+    private float moveInput;
 
-    float jumpPressTime;
     bool jumpRequest;
+    int jumpCounter;
+    public float jumpTime;
+    float jumpTimeCounter;
+    float jumpRequestTime;
+
+    bool isGrounded;
+    public Transform feetPosition;
+    public float checkRadius;
+    public LayerMask whatIsGround;
 
     public float fallMultiplier = 4.5f;
     public float lowJumpMultiplier = 3f;
-
-
+    
 
     void Start()
     {
@@ -38,17 +44,20 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    void Update()
+    private void FixedUpdate()
     {
-        //input calls
         Walk();
         Jump();
 
+        rb.velocity = new Vector3(velocity.x, rb.velocity.y, velocity.z);
 
-        rb.velocity = new Vector3(velocity.x, rb.velocity.y + verticalVelocity, velocity.z);
-        
-        //movement modifiers
         JumpModfier();
+    }
+
+
+    void Update()
+    {
+        TestGroundedState();
     }
 
 
@@ -56,31 +65,62 @@ public class PlayerController : MonoBehaviour
     {
         ResetMovementToZero();
 
-        float xMove = Input.GetAxisRaw(horizontalCtrl);
-        
-        if (xMove != 0f)
+        moveInput = Input.GetAxisRaw(horizontalCtrl);
+            
+        if (moveInput != 0f)
         {
-            velocity += Vector3.right * xMove * stats.walkSpeed.GetValue();
+            velocity += Vector3.right * moveInput * stats.walkSpeed.GetValue();
         }
     }
 
 
+   
     void Jump()
     {
         if (Input.GetButton(jumpButton))
         {
-            if (jumpPressTime == 0f)
+            if (jumpRequestTime == 0f)
             {
-                jumpRequest = true;
-                verticalVelocity = stats.jumpHeight.GetValue();
+                if (isGrounded || jumpRequestTime < 1f && jumpCounter < 2)
+                {
+                    jumpRequest = true;
+                    jumpCounter++;
+                    isGrounded = false;
+                    jumpTimeCounter = jumpTime;
+                    rb.velocity = Vector3.up * stats.jumpHeight.GetValue();
+                }
             }
-
-            jumpPressTime += Time.deltaTime;
+            if (jumpRequestTime > 0f && jumpRequest)
+            {
+                if (jumpTimeCounter > 0)
+                {
+                    jumpTimeCounter -= Time.deltaTime;
+                }
+                else
+                {
+                    jumpRequest = false;
+                }
+            }
+            jumpRequestTime += Time.deltaTime;
         }
-
         else
         {
             ResetJump();
+        }
+    }
+
+
+    // Used checkSphere to have a layer mask... this can be used to set different interactions depending on ground type.. sticky floor harder to jump etc.
+    void TestGroundedState()
+    {
+        if (Physics.CheckSphere(feetPosition.position, checkRadius, whatIsGround))
+        {
+            isGrounded = true;
+            jumpCounter = 1;
+        }
+        else
+        {
+            isGrounded = false;
         }
     }
 
@@ -101,13 +141,12 @@ public class PlayerController : MonoBehaviour
     void ResetMovementToZero()
     {
         velocity = Vector3.zero;
-        verticalVelocity = 0f;
     }
 
     
     void ResetJump()
     {
-        jumpPressTime = 0f;
+        jumpRequestTime = 0f;
         jumpRequest = false;
     }
 
