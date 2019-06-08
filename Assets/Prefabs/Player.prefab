@@ -296,7 +296,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 627bfb94abafb1d4292994882cf47440, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  jumpTime: 0.225
   fallGravityMultiplier: 5
-  lowJumpGravityMultiplier: 3
-  jumpButton: Jump
-  horizontalCtrl: Horizontal
+  lowJumpMultiplier: 3
+  jumpButton: Jump_P1
+  horizontalCtrl: Horizontal_P1
