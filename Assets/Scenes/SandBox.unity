@@ -804,6 +804,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 7671659472702538543, guid: 93072549d238bb641a2c947ee2f7b303,
+        type: 3}
+      propertyPath: wallJumpClimb.x
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 7671659472702538543, guid: 93072549d238bb641a2c947ee2f7b303,
+        type: 3}
+      propertyPath: wallJumpClimb.y
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 7403143044353606961, guid: 93072549d238bb641a2c947ee2f7b303,
         type: 3}
       propertyPath: m_Name

@@ -32,6 +32,8 @@ public class PlayerController : MonoBehaviour
     FacingDirection facing = FacingDirection.Right;
     private float moveInput;
 
+    public float walkSpeed = 6;
+    public float jumpHeight = 9;
     bool jumpRequest;
     int jumpCounter;
     public float jumpTime;
@@ -101,7 +103,7 @@ public class PlayerController : MonoBehaviour
                     jumpCounter++;
                     isGrounded = false;
                     jumpTimeCounter = jumpTime;
-                    rb.velocity = new Vector3(rb.velocity.x, stats.jumpHeight.GetValue(), rb.velocity.z);
+                    rb.velocity = new Vector3(rb.velocity.x, jumpHeight, rb.velocity.z);
                 }
             }
             if (jumpRequestTime > 0f && jumpRequest)
@@ -149,7 +151,7 @@ public class PlayerController : MonoBehaviour
 
     void ApplyMovement()
     {
-        rb.velocity = new Vector3(moveInput * stats.walkSpeed.GetValue(), rb.velocity.y, rb.velocity.z);
+        rb.velocity = new Vector3(moveInput * walkSpeed, rb.velocity.y, rb.velocity.z);
         Debug.DrawRay(transform.position, rb.velocity);
     }
 
@@ -173,7 +175,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                velocity.x = moveInput * stats.walkSpeed.GetValue();
+                velocity.x = moveInput * walkSpeed;
             }
 
             if (moveInput > 0.0f)
@@ -203,7 +205,7 @@ public class PlayerController : MonoBehaviour
                     jumpCounter++;
                     isGrounded = false;
                     jumpTimeCounter = jumpTime;
-                    rb.velocity = Vector3.up * stats.jumpHeight.GetValue();
+                    rb.velocity = Vector3.up * jumpHeight;
                 }
             }
             if (jumpRequestTime > 0f && jumpRequest)
