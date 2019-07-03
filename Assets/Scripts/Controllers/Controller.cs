@@ -16,6 +16,8 @@ public class Controller : MonoBehaviour
     public float jumpHeight = 9.0f;
     public float jumpTime;
     public Vector3 wallJumpClimb;
+    public Vector3 wallJumpOff;
+    public Vector3 wallLeap;
     public float fallGravityMultiplier = 5.0f;
     public float lowJumpMultiplier = 3.0f;
     public float walkSpeed = 6.0f;
@@ -34,8 +36,7 @@ public class Controller : MonoBehaviour
     protected bool isContactLeft;
     protected int wallDirection;
     protected bool isWallSliding;
-    protected float wallStickTime = 0.25f;
-
+    protected float wallStickTime = .25f;
 
 
     private void OnEnable()
@@ -76,11 +77,10 @@ public class Controller : MonoBehaviour
         CollisionTests();
         WallSlidingTest();
 
-        JumpModfier();
-        WallSlidingModifier();
-
         //TODO walking down and up slopes needs to be fixed so you stick to the ground might need to change this over to rb.position
+
         rb.velocity = new Vector3(moveInput * walkSpeed, rb.velocity.y, rb.velocity.z);
+        
 
         if (isContactLeft && moveInput < 0.0f || isContactRight && moveInput > 0.0f)
         {
@@ -90,17 +90,38 @@ public class Controller : MonoBehaviour
         if (jumpRequest)
         {
             rb.velocity = new Vector3(rb.velocity.x, jumpHeight, rb.velocity.z);
-            if (wallDirection == moveInput)
+            Debug.Log(jumpRequest);
+            
+            if (isWallSliding)
             {
-                Vector3 forceToAdd = new Vector3(-wallDirection * wallJumpClimb.x, wallJumpClimb.y, rb.velocity.z);
-                rb.AddForce(forceToAdd, ForceMode.Impulse);
-                Debug.Log("Wall Jump Climb");
+                //TODO need to find a way to delay the application of the regular nonWallSliding rb.velocity for these to work
+                //TODO probably some sort of timer
+                if (wallDirection == moveInput)
+                {
+                    Vector3 forceToAdd = new Vector3(-wallDirection * wallJumpClimb.x, wallJumpClimb.y, rb.velocity.z);
+                    rb.AddForce(forceToAdd, ForceMode.Impulse);
+                    Debug.Log("Wall Jump Climb");
+                }
+                else if (moveInput == 0)
+                {
+                    Vector3 forceToAdd = new Vector3(-wallDirection * wallJumpOff.x, wallJumpOff.y, rb.velocity.z);
+                    rb.AddForce(forceToAdd, ForceMode.Impulse);
+                    Debug.Log("Wall Jump Off");
+                }
+                else
+                {
+                    Vector3 forceToAdd = new Vector3(-wallDirection * wallLeap.x, wallLeap.y, rb.velocity.z);
+                    rb.AddForce(forceToAdd, ForceMode.Impulse);
+                    Debug.Log("Wall Leap");
+                }
             }
         }
-               
+        
+        JumpModfier();
+        WallSlidingModifier();
     }
 
-
+    //TODO Check out cast method to see how collisions feel or make .1f a higher number to make collision happen a little earlier
     void CollisionTests()
     {
         isGrounded = Physics.Raycast(transform.position, Vector3.down, coll.bounds.extents.y + 0.1f);
@@ -117,16 +138,19 @@ public class Controller : MonoBehaviour
         {
             wallDirection = -1;
         }
-        else
+        else if (isContactRight)
         {
             wallDirection = 1;
+        }
+        else
+        {
+            wallDirection = 0;
         }
     }
 
 
     void WallSlidingTest()
     {
-
         if ((isContactLeft || isContactRight) && !isGrounded && rb.velocity.y < 0.0f)
         {
             isWallSliding = true;
@@ -146,7 +170,6 @@ public class Controller : MonoBehaviour
             {
                 timeToWallUnstick = wallStickTime;
             }
-            //Not sure about this below might have to remove it so player can climb walls
             jumpCounter = 1;
         }
         else
@@ -178,7 +201,7 @@ public class Controller : MonoBehaviour
         {
             rb.velocity += Physics.gravity * (fallGravityMultiplier - 1) * Time.deltaTime;
         }
-        else if (rb.velocity.y > 0/* && !jumpRequest*/)
+        else if (rb.velocity.y > 0 && !jumpRequest)
         {
             rb.velocity += Physics.gravity * (lowJumpMultiplier - 1) * Time.deltaTime;
         }

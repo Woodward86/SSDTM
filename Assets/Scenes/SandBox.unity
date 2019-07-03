@@ -814,6 +814,31 @@ PrefabInstance:
       propertyPath: wallJumpClimb.y
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 7671659472702538543, guid: 93072549d238bb641a2c947ee2f7b303,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7671659472702538543, guid: 93072549d238bb641a2c947ee2f7b303,
+        type: 3}
+      propertyPath: wallJumpOff.x
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7671659472702538543, guid: 93072549d238bb641a2c947ee2f7b303,
+        type: 3}
+      propertyPath: wallJumpOff.y
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7671659472702538543, guid: 93072549d238bb641a2c947ee2f7b303,
+        type: 3}
+      propertyPath: wallLeap.x
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7671659472702538543, guid: 93072549d238bb641a2c947ee2f7b303,
+        type: 3}
+      propertyPath: wallLeap.y
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 7403143044353606961, guid: 93072549d238bb641a2c947ee2f7b303,
         type: 3}
       propertyPath: m_Name

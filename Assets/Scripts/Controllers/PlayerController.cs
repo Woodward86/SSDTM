@@ -69,9 +69,9 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //Walk();
+
         ApplyMovement();
-        //Jump();
+  
 
         //rb.velocity = new Vector3(velocity.x, rb.velocity.y, velocity.z);
         
@@ -155,91 +155,7 @@ public class PlayerController : MonoBehaviour
         Debug.DrawRay(transform.position, rb.velocity);
     }
 
-
-    void Walk()
-    {
-        ResetMovementToZero();
-
-        moveInput = Input.GetAxisRaw(horizontalCtrl);
-            
-        if (moveInput != 0f)
-        {
-            //This is how I'm dealing with unlimited wall stick 
-            if (isContactLeft && moveInput < 0.0f)
-            {
-                velocity.x = 0.0f;
-            }
-            else if (isContactRight && moveInput > 0.0f)
-            {
-                velocity.x = 0.0f;
-            }
-            else
-            {
-                velocity.x = moveInput * walkSpeed;
-            }
-
-            if (moveInput > 0.0f)
-            {
-                transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
-                facing = FacingDirection.Right;
-            }
-            else
-            {
-                transform.localRotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
-                facing = FacingDirection.Left;
-            }
-
-        }
-    }
     
-   
-    void Jump()
-    {
-        if (Input.GetButton(jumpButton))
-        {
-            if (jumpRequestTime == 0f)
-            {
-                if ((isGrounded || jumpRequestTime < 1f && jumpCounter < 2) && !isWallSliding)
-                {
-                    jumpRequest = true;
-                    jumpCounter++;
-                    isGrounded = false;
-                    jumpTimeCounter = jumpTime;
-                    rb.velocity = Vector3.up * jumpHeight;
-                }
-            }
-            if (jumpRequestTime > 0f && jumpRequest)
-            {
-                if (jumpTimeCounter > 0)
-                {
-                    jumpTimeCounter -= Time.deltaTime;
-                }
-                else
-                {
-                    jumpRequest = false;
-                }
-            }
-            if (isWallSliding)
-            {
-                if (wallDirX == moveInput)
-                {
-                    velocity.x = -wallDirX * wallJumpClimb.x;
-                    Vector3 forceToAdd = new Vector3(0.0f, wallJumpClimb.y, rb.velocity.z);
-                    rb.AddForce(forceToAdd, ForceMode.Impulse);
-                    Debug.Log("wallJumpClimb");
-
-                }
-            }
-            jumpRequestTime += Time.deltaTime;
-
-        }
-        else
-        {
-            ResetJump();
-        }
-    }
-
-
     //TODO:  Need to add more rays Left, Middle, Right of character
     void TestGroundedState()
     {
@@ -253,6 +169,7 @@ public class PlayerController : MonoBehaviour
             isGrounded = false;
         }
     }
+
 
     //TODO:  Need to add more rays Top, Middle, Bottom of character 
     void TestWallSlidingState()

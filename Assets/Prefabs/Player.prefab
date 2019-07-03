@@ -235,10 +235,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
-  walkSpeed:
-    baseValue: 6
-  jumpHeight:
-    baseValue: 9
+  weight: 0
   armour:
     baseValue: 0
   damage:
@@ -258,6 +255,8 @@ MonoBehaviour:
   useController: 0
   jumpButton: Jump_P1
   horizontalCtrl: Horizontal_P1
+  walkSpeed: 6
+  jumpHeight: 9
   jumpTime: 0.35
   wallJumpClimb: {x: 16, y: 7, z: 0}
   wallJumpOff: {x: 8, y: 5, z: 0}
@@ -296,8 +295,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 627bfb94abafb1d4292994882cf47440, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  jumpHeight: 9
   jumpTime: 0.225
+  wallJumpClimb: {x: 0, y: 0, z: 0}
+  wallJumpOff: {x: 0, y: 0, z: 0}
+  wallLeap: {x: 0, y: 0, z: 0}
   fallGravityMultiplier: 5
   lowJumpMultiplier: 3
+  walkSpeed: 6
+  wallSlideSpeed: 3
+  timeToWallUnstick: 0
   jumpButton: Jump_P1
   horizontalCtrl: Horizontal_P1
