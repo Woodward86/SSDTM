@@ -5,6 +5,7 @@ public class Player : Controller
     [Header("Input Settings")]
     public string jumpButton = "Jump_P1";
     public string horizontalCtrl = "Horizontal_P1";
+    public string sprintButton = "Sprint_P1";
         
     protected override void GetInput()
     {
@@ -22,7 +23,18 @@ public class Player : Controller
                 transform.localRotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
             }
         }
-        
+
+
+        if (moveInput != 0 && Input.GetButton(sprintButton) && isGrounded)
+        {
+            sprintRequest = true;
+        }
+        else
+        {
+            ResetSprint();
+        }
+
+
         if (Input.GetButton(jumpButton))
         {
             if (jumpRequestTime == 0f)

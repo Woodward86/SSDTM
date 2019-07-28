@@ -166,7 +166,6 @@ GameObject:
   - component: {fileID: 3671845373291940700}
   - component: {fileID: 6681288929352443958}
   - component: {fileID: 1426263395202338752}
-  - component: {fileID: 8284523408551862451}
   - component: {fileID: 1630888527871502762}
   - component: {fileID: 7671659472702538543}
   m_Layer: 0
@@ -240,34 +239,6 @@ MonoBehaviour:
     baseValue: 0
   damage:
     baseValue: 0
---- !u!114 &8284523408551862451
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7403143044353606961}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93d1b24c0a1fdd542bf0638c67ff01c3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  useController: 0
-  jumpButton: Jump_P1
-  horizontalCtrl: Horizontal_P1
-  walkSpeed: 6
-  jumpHeight: 9
-  jumpTime: 0.35
-  wallJumpClimb: {x: 16, y: 7, z: 0}
-  wallJumpOff: {x: 8, y: 5, z: 0}
-  wallLeap: {x: 20, y: 10, z: 0}
-  wallSlideSpeed: 3
-  timeToWallUnstick: 0
-  whatIsGround:
-    serializedVersion: 2
-    m_Bits: 512
-  fallMultiplier: 5
-  lowJumpMultiplier: 3
 --- !u!114 &1630888527871502762
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -297,13 +268,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   jumpHeight: 9
   jumpTime: 0.225
-  wallJumpClimb: {x: 0, y: 0, z: 0}
-  wallJumpOff: {x: 0, y: 0, z: 0}
-  wallLeap: {x: 0, y: 0, z: 0}
+  canWallJump: 0
+  wallJumpClimb: {x: 7, y: 12, z: 0}
+  wallJumpOff: {x: 3, y: 1, z: 0}
+  wallLeap: {x: 13, y: 13, z: 0}
   fallGravityMultiplier: 5
   lowJumpMultiplier: 3
   walkSpeed: 6
+  sprintSpeed: 12
   wallSlideSpeed: 3
   timeToWallUnstick: 0
+  accelerationTimeGrounded: 0.1
+  accelerationTimeAirborne: 0.2
   jumpButton: Jump_P1
   horizontalCtrl: Horizontal_P1
+  sprintButton: Sprint_P1
