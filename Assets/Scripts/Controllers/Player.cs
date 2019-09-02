@@ -3,10 +3,12 @@
 public class Player : Controller
 {
     [Header("Input Settings")]
-    public string jumpButton = "Jump_P1";
     public string horizontalCtrl = "Horizontal_P1";
     public string sprintButton = "Sprint_P1";
-        
+    public string jumpButton = "Jump_P1";
+    public string crouchButton = "Crouch_P1";
+
+            
     protected override void GetInput()
     {
         moveInput = Input.GetAxisRaw(horizontalCtrl);
@@ -39,7 +41,7 @@ public class Player : Controller
         {
             if (jumpRequestTime == 0f)
             {
-                if (isGrounded || jumpRequestTime < 1f && jumpCounter < 2)
+                if (isGrounded || jumpCounter < 2)
                 {
                     jumpRequest = true;
                     jumpCounter++;
@@ -59,11 +61,27 @@ public class Player : Controller
                     jumpRequest = false;
                 }
             }
+
             jumpRequestTime += Time.deltaTime;
         }
         else
         {
             ResetJump();
         }
+
+
+        if (Input.GetButton(crouchButton))
+        {
+            crouchRequest = true;
+            isCrouching = true;
+        }
+        else
+        {
+            if (isCrouching && !isContactAbove)
+            {
+                ResetCrouch();
+            }            
+        }
+               
     }
 }

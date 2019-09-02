@@ -1,16 +1,22 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(Collider))]
+[RequireComponent(typeof(CapsuleCollider))]
+[RequireComponent(typeof(SphereCollider))]
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(PlayerStats))]
+[RequireComponent(typeof(Animator))]
 
 
 public class Controller : MonoBehaviour
 {
     //setup
     protected Rigidbody rb;
-    protected Collider coll;
+    protected CapsuleCollider cColl;
+    protected SphereCollider sColl;
     protected PlayerStats stats;
+
+    //animator setup
+    protected Animator animator;
 
     [Header("Movement Settings")]
     public float jumpHeight = 9.0f;
@@ -35,13 +41,14 @@ public class Controller : MonoBehaviour
     protected float jumpRequestTime;
     protected float jumpTimeCounter;
     protected bool sprintRequest;
+    protected bool crouchRequest;
+    protected bool isCrouching;
     public float rayLength = .1f;
     protected bool isGrounded;
     protected bool isContactAbove;
     protected bool isContactRight;
     protected bool isContactLeft;
     protected int wallDirection;
-
     protected bool isWallSliding;
     protected float wallStickTime = .25f;
 
@@ -55,8 +62,11 @@ public class Controller : MonoBehaviour
     private void OnEnable()
     {
         rb = GetComponent<Rigidbody>();
-        coll = GetComponent<Collider>();
+        cColl = GetComponent<CapsuleCollider>();
+        sColl = GetComponent<SphereCollider>();
         stats = GetComponent<PlayerStats>();
+
+        animator = GetComponent<Animator>();
     }
 
 
@@ -103,13 +113,8 @@ public class Controller : MonoBehaviour
                
         if (sprintRequest)
         {
-            velocityXTarget = moveInput * sprintSpeed;
-            velocityXSmoothed = Mathf.SmoothDamp(rb.velocity.x, velocityXTarget, ref velocityXSmoothing, (isGrounded) ? accelerationTimeGrounded : accelerationTimeAirborne);
-            rb.velocity = new Vector3(velocityXSmoothed, rb.velocity.y, rb.velocity.z);
-            Debug.Log("Sprinting!" + velocityXTarget);
-            Debug.Log(rb.velocity.x);
+            SprintModifier();
         }
-
 
 
         if (isContactLeft && moveInput < 0.0f || isContactRight && moveInput > 0.0f)
@@ -144,20 +149,36 @@ public class Controller : MonoBehaviour
                 }
             }
         }
+
+
+        if (crouchRequest)
+        {
+            CrouchModifier();
+        }
+
         
         JumpModfier();
         WallSlidingModifier();
     }
 
     //TODO Check out cast method to see how collisions feel or make .1f a higher number to make collision happen a little earlier
+    //TODO Need to turn each of these into 3 rays(left, center, right)(top, center, bottom)
     void CollisionTests()
     {
-        isGrounded = Physics.Raycast(transform.position, Vector3.down, coll.bounds.extents.y + rayLength);
-        isContactAbove = Physics.Raycast(transform.position, Vector3.up, coll.bounds.extents.y + rayLength);
-        isContactRight = Physics.Raycast(transform.position, Vector3.right, coll.bounds.extents.x + rayLength);
-        isContactLeft = Physics.Raycast(transform.position, Vector3.left, coll.bounds.extents.x + rayLength);
-        
-        if(isGrounded)
+        isGrounded = Physics.Raycast(transform.position + sColl.center, Vector3.down, sColl.bounds.extents.y + rayLength);
+        isContactAbove = Physics.Raycast(transform.position + cColl.center, Vector3.up, cColl.bounds.extents.y + rayLength);
+        isContactRight = Physics.Raycast(transform.position + cColl.center, Vector3.right, cColl.bounds.extents.x + rayLength);
+        isContactLeft = Physics.Raycast(transform.position + cColl.center, Vector3.left, cColl.bounds.extents.x + rayLength);
+
+        if (isCrouching)
+        {
+            isContactAbove = Physics.Raycast(transform.position + sColl.center, Vector3.up, sColl.bounds.extents.y + rayLength);
+            isContactRight = Physics.Raycast(transform.position + sColl.center, Vector3.right, sColl.bounds.extents.x + rayLength);
+            isContactLeft = Physics.Raycast(transform.position + sColl.center, Vector3.left, sColl.bounds.extents.x + rayLength);
+        }
+
+
+        if (isGrounded)
         {
             jumpCounter = 1;
         }
@@ -236,6 +257,21 @@ public class Controller : MonoBehaviour
     }
 
 
+    void SprintModifier()
+    {
+        velocityXTarget = moveInput * sprintSpeed;
+        velocityXSmoothed = Mathf.SmoothDamp(rb.velocity.x, velocityXTarget, ref velocityXSmoothing, (isGrounded) ? accelerationTimeGrounded : accelerationTimeAirborne);
+        rb.velocity = new Vector3(velocityXSmoothed, rb.velocity.y, rb.velocity.z);
+    }
+
+
+    void CrouchModifier()
+    {
+        animator.SetBool("crouchPressed", true);
+        cColl.enabled = false;
+    }
+
+
     public void ResetJump()
     {
         jumpRequestTime = 0.0f;
@@ -249,7 +285,16 @@ public class Controller : MonoBehaviour
     }
 
 
-    void ResetWallSlide()
+    public void ResetCrouch()
+    {
+        crouchRequest = false;
+        isCrouching = false;
+        cColl.enabled = true;
+        animator.SetBool("crouchPressed", false);
+    }
+
+
+    public void ResetWallSlide()
     {
         timeToWallUnstick = 0f;
         isWallSliding = false;
