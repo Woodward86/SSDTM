@@ -41,7 +41,7 @@ public class Player : Controller
         {
             if (jumpRequestTime == 0f)
             {
-                if (isGrounded || jumpCounter < 2)
+                if (isGrounded || jumpCounter < numberOfJumps)
                 {
                     jumpRequest = true;
                     jumpCounter++;

@@ -21,6 +21,7 @@ public class Controller : MonoBehaviour
     [Header("Movement Settings")]
     public float jumpHeight = 9.0f;
     public float jumpTime;
+    public float numberOfJumps = 2;
 
     public bool canWallJump = false;
     public Vector3 wallJumpClimb;
@@ -45,6 +46,7 @@ public class Controller : MonoBehaviour
     protected bool isCrouching;
     public float rayLength = .1f;
     protected bool isGrounded;
+    protected float groundedTimeCounter;
     protected bool isContactAbove;
     protected bool isContactRight;
     protected bool isContactLeft;
@@ -55,8 +57,11 @@ public class Controller : MonoBehaviour
     float velocityXSmoothing;
     public float accelerationTimeGrounded = .1f;
     public float accelerationTimeAirborne = .2f;
+    public float accelerationTouchedDown = .0f;
+    float accelerationTime;
     float velocityXTarget;
     float velocityXSmoothed;
+    float distanceToGround;
 
 
     private void OnEnable()
@@ -98,20 +103,35 @@ public class Controller : MonoBehaviour
     void Movement()
     {
         CollisionTests();
+        //DistanceTests();
 
         if (canWallJump)
         {
             WallSlidingTest();
         }
-
-
+        
         //TODO walking down and up slopes needs to be fixed
-        //TODO player sticks for a fraction of a second when he lands, this needs to be fixed, it should be smoothly transition
         velocityXTarget = moveInput * walkSpeed;
-        velocityXSmoothed = Mathf.SmoothDamp(rb.velocity.x, velocityXTarget, ref velocityXSmoothing, (isGrounded) ? accelerationTimeGrounded : accelerationTimeAirborne);
+
+        if (isGrounded && groundedTimeCounter < .2f)
+        {
+            accelerationTime = Mathf.SmoothDamp(accelerationTouchedDown, accelerationTimeGrounded, ref velocityXSmoothing, .2f);
+        }
+        else if (isGrounded)
+        {
+            accelerationTime = .1f;
+        }
+        else
+        {
+            accelerationTime = .2f;
+        }
+
+        velocityXSmoothed = Mathf.SmoothDamp(rb.velocity.x, velocityXTarget, ref velocityXSmoothing, accelerationTime);
         rb.velocity = new Vector3(velocityXSmoothed, rb.velocity.y, rb.velocity.z);
-               
-        if (sprintRequest)
+        //Debug.Log(accelerationTime);
+        //Debug.Log(rb.velocity.x);
+        
+        if (sprintRequest && !isCrouching)
         {
             SprintModifier();
         }
@@ -126,6 +146,7 @@ public class Controller : MonoBehaviour
         if (jumpRequest)
         {
             rb.velocity = new Vector3(rb.velocity.x, jumpHeight, rb.velocity.z);
+            groundedTimeCounter = 0f;
             
             if (isWallSliding)
             { 
@@ -176,11 +197,11 @@ public class Controller : MonoBehaviour
             isContactRight = Physics.Raycast(transform.position + sColl.center, Vector3.right, sColl.bounds.extents.x + rayLength);
             isContactLeft = Physics.Raycast(transform.position + sColl.center, Vector3.left, sColl.bounds.extents.x + rayLength);
         }
-
-
+        
         if (isGrounded)
         {
             jumpCounter = 1;
+            groundedTimeCounter += Time.deltaTime;
         }
 
         if (isContactLeft)
@@ -195,6 +216,15 @@ public class Controller : MonoBehaviour
         {
             wallDirection = 0;
         }
+    }
+
+
+    void DistanceTests()
+    {
+        RaycastHit downHit;
+        if (Physics.Raycast(transform.position, Vector3.down, out downHit))
+            distanceToGround = downHit.distance;
+            //Debug.Log("Distance from ground is: " + downHit.distance);
     }
 
 
@@ -260,7 +290,7 @@ public class Controller : MonoBehaviour
     void SprintModifier()
     {
         velocityXTarget = moveInput * sprintSpeed;
-        velocityXSmoothed = Mathf.SmoothDamp(rb.velocity.x, velocityXTarget, ref velocityXSmoothing, (isGrounded) ? accelerationTimeGrounded : accelerationTimeAirborne);
+        velocityXSmoothed = Mathf.SmoothDamp(rb.velocity.x, velocityXTarget, ref velocityXSmoothing, accelerationTime);
         rb.velocity = new Vector3(velocityXSmoothed, rb.velocity.y, rb.velocity.z);
     }
 
