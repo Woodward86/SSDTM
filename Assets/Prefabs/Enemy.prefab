@@ -264,7 +264,7 @@ MonoBehaviour:
   weight: 0
   armour:
     baseValue: 0
-  damage:
+  spellPower:
     baseValue: 0
 --- !u!114 &1275932260659226372
 MonoBehaviour:

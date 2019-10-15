@@ -4,6 +4,8 @@
 [RequireComponent(typeof(SphereCollider))]
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(PlayerStats))]
+[RequireComponent(typeof(Inventory))]
+[RequireComponent(typeof(MagicCast))]
 [RequireComponent(typeof(Animator))]
 
 
@@ -14,6 +16,8 @@ public class Controller : MonoBehaviour
     protected CapsuleCollider cColl;
     protected SphereCollider sColl;
     protected PlayerStats stats;
+    protected Inventory inventory;
+    protected MagicCast magicCast;
 
     //animator setup
     protected Animator animator;
@@ -54,6 +58,11 @@ public class Controller : MonoBehaviour
     protected bool isWallSliding;
     protected float wallStickTime = .25f;
 
+    protected float ellapsedTime;
+    protected float basicAttackInput;
+    protected bool basicAttackRequest;
+    protected float basicaAttackRequestTime;
+
     float velocityXSmoothing;
     public float accelerationTimeGrounded = .1f;
     public float accelerationTimeAirborne = .2f;
@@ -70,6 +79,8 @@ public class Controller : MonoBehaviour
         cColl = GetComponent<CapsuleCollider>();
         sColl = GetComponent<SphereCollider>();
         stats = GetComponent<PlayerStats>();
+        inventory = GetComponent<Inventory>();
+        magicCast = GetComponent<MagicCast>();
 
         animator = GetComponent<Animator>();
     }
@@ -96,6 +107,7 @@ public class Controller : MonoBehaviour
     private void FixedUpdate()
     {
         Movement();
+        Combat();
         Debug.DrawRay(rb.position, rb.velocity, Color.red);
     }
 
@@ -181,6 +193,20 @@ public class Controller : MonoBehaviour
         JumpModfier();
         WallSlidingModifier();
     }
+
+
+    void Combat()
+    {
+
+        ellapsedTime += Time.deltaTime;
+
+        if (basicAttackRequest && ellapsedTime > inventory.manaClasses[0].spells[0].coolDown)
+        {
+            ellapsedTime = 0f;
+            magicCast.BasicAttack();
+        }
+    }
+    
 
     //TODO Check out cast method to see how collisions feel or make .1f a higher number to make collision happen a little earlier
     //TODO Need to turn each of these into 3 rays(left, center, right)(top, center, bottom)
@@ -328,6 +354,12 @@ public class Controller : MonoBehaviour
     {
         timeToWallUnstick = 0f;
         isWallSliding = false;
+    }
+
+
+    public void ResetBasicAttack()
+    {
+        basicAttackRequest = false;
     }
 
 }

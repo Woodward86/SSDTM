@@ -1,9 +1,13 @@
 ﻿
-
 public class PlayerStats : CharacterStats
 {
-    private void Start()
+    public override void Die()
     {
-        
+        base.Die();
+
+        //TODO: Add death animation and loot drops
+
+        Destroy(gameObject);
     }
 }
+

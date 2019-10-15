@@ -2,16 +2,19 @@
 
 public class Player : Controller
 {
+    
     [Header("Input Settings")]
     public string horizontalCtrl = "Horizontal_P1";
     public string sprintButton = "Sprint_P1";
     public string jumpButton = "Jump_P1";
     public string crouchButton = "Crouch_P1";
+    public string basicAttackButton = "BasicAttack_P1";
 
             
     protected override void GetInput()
     {
         moveInput = Input.GetAxisRaw(horizontalCtrl);
+        basicAttackInput = Input.GetAxisRaw(basicAttackButton);
 
         if (moveInput != 0)
         {
@@ -81,6 +84,19 @@ public class Player : Controller
             {
                 ResetCrouch();
             }            
+        }
+
+
+        if (Input.GetButton(basicAttackButton) || basicAttackInput != 0f)
+        {
+            if (basicaAttackRequestTime == 0f)
+            {
+                basicAttackRequest = true;
+            }
+        }
+        else
+        {
+            ResetBasicAttack();
         }
                
     }

@@ -4,10 +4,9 @@ public class CharacterStats : MonoBehaviour
 {
     public int maxHealth = 100;
     public int currentHealth { get; private set; }
-    public int weight;
 
     public Stat armour;
-    public Stat damage;
+    public Stat spellPower;
 
     private void Awake()
     {

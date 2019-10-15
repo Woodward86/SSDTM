@@ -7,6 +7,7 @@ TagManager:
   - Game Manager
   - Main Menu
   - Settings Menu
+  - Spell
   layers:
   - Default
   - TransparentFX

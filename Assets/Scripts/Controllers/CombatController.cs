@@ -12,22 +12,23 @@ public class CombatController : MonoBehaviour
     }
 
 
-    private void OnTriggerEnter(Collider weapon)
+    private void OnTriggerEnter(Collider spell)
     {
-        if (weapon.CompareTag("Weapon"))
+        if (spell.CompareTag("Spell"))
         {
-            attacker = weapon.GetComponentInParent<CombatController>();
-            //Debug.Log(attacker);
+            //Debug.Log(spell.name);
+            attacker = spell.GetComponent<Projectile>().caster;
+            Debug.Log(attacker);
             if (attacker != null && attacker.name != gameObject.name)
             {
-                attacker.Attack(myStats);
+                attacker.Attack(myStats, spell.GetComponent<Projectile>().projectileDamage);
             }
         }
     }
 
 
-    public void Attack(CharacterStats targetStats)
+    public void Attack(CharacterStats targetStats, int projectileDamage)
     {
-        targetStats.TakeDamage(myStats.damage.GetValue());
+        targetStats.TakeDamage(projectileDamage * myStats.spellPower.GetValue());
     }
 }
