@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(CapsuleCollider))]
 [RequireComponent(typeof(SphereCollider))]
-[RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(PlayerStats))]
+[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(CharacterStats))]
 [RequireComponent(typeof(Inventory))]
 [RequireComponent(typeof(MagicCast))]
-[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(CombatController))]
 
 
 public class Controller : MonoBehaviour
@@ -15,9 +16,10 @@ public class Controller : MonoBehaviour
     protected Rigidbody rb;
     protected CapsuleCollider cColl;
     protected SphereCollider sColl;
-    protected PlayerStats stats;
+    protected CharacterStats stats;
     protected Inventory inventory;
     protected MagicCast magicCast;
+    protected CombatController combatC;
 
     //animator setup
     protected Animator animator;
@@ -36,11 +38,13 @@ public class Controller : MonoBehaviour
     public float lowJumpMultiplier = 3.0f;
     public float walkSpeed = 6.0f;
     public float sprintSpeed = 12.0f;
+    public float aimingSpeedMultiplier = .5f;
     public float wallSlideSpeed;
     public float timeToWallUnstick;
 
     protected float moveInput;
     protected float facingDirection;
+    protected float aimDirectionInput;
     protected bool jumpRequest;
     protected int jumpCounter;
     protected float jumpRequestTime;
@@ -58,10 +62,14 @@ public class Controller : MonoBehaviour
     protected bool isWallSliding;
     protected float wallStickTime = .25f;
 
+    protected bool aimRequest;
+    public bool isAiming;
+    public Vector3 aimVector;
+
     protected float ellapsedTime;
-    protected float basicAttackInput;
     protected bool basicAttackRequest;
-    protected float basicaAttackRequestTime;
+    protected bool blockRequest;
+
 
     float velocityXSmoothing;
     public float accelerationTimeGrounded = .1f;
@@ -78,9 +86,10 @@ public class Controller : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         cColl = GetComponent<CapsuleCollider>();
         sColl = GetComponent<SphereCollider>();
-        stats = GetComponent<PlayerStats>();
+        stats = GetComponent<CharacterStats>();
         inventory = GetComponent<Inventory>();
         magicCast = GetComponent<MagicCast>();
+        combatC = GetComponent<CombatController>();
 
         animator = GetComponent<Animator>();
     }
@@ -92,7 +101,7 @@ public class Controller : MonoBehaviour
     }
 
 
-    void Update()
+    protected virtual void Update()
     {
         GetInput();
     }
@@ -108,7 +117,8 @@ public class Controller : MonoBehaviour
     {
         Movement();
         Combat();
-        Debug.DrawRay(rb.position, rb.velocity, Color.red);
+        Regeneration();
+        //Debug.DrawRay(rb.position, rb.velocity, Color.red);
     }
 
 
@@ -121,7 +131,29 @@ public class Controller : MonoBehaviour
         {
             WallSlidingTest();
         }
-        
+
+
+        if (aimRequest)
+        {
+            AimModifier();
+        }
+        else
+        {
+            if (moveInput != 0)
+            {
+                facingDirection = moveInput;
+                if (facingDirection >= 0.0f)
+                {
+                    transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+                }
+                else
+                {
+                    transform.localRotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
+                }
+            }
+        }
+
+
         //TODO walking down and up slopes needs to be fixed
         velocityXTarget = moveInput * walkSpeed;
 
@@ -197,14 +229,46 @@ public class Controller : MonoBehaviour
 
     void Combat()
     {
+        inventory.manaClasses[0].offensiveSpells[0].coolDownTimer -= Time.deltaTime;
+        inventory.manaClasses[1].defensiveSpells[0].coolDownTimer -= Time.deltaTime;
 
-        ellapsedTime += Time.deltaTime;
-
-        if (basicAttackRequest && ellapsedTime > inventory.manaClasses[0].spells[0].coolDown)
+        if (basicAttackRequest 
+            && inventory.manaClasses[0].offensiveSpells[0].coolDownTimer <= 0f
+            && inventory.manaClasses[0].offensiveSpells[0].manaCost < stats.currentMana)
         {
-            ellapsedTime = 0f;
+            inventory.manaClasses[0].offensiveSpells[0].coolDownTimer = inventory.manaClasses[0].offensiveSpells[0].coolDown;
             magicCast.BasicAttack();
         }
+
+
+        if (blockRequest 
+            && inventory.manaClasses[1].defensiveSpells[0].coolDownTimer <= 0f
+            && inventory.manaClasses[1].defensiveSpells[0].manaCost < stats.currentMana)
+        {
+            inventory.manaClasses[1].defensiveSpells[0].coolDownTimer = inventory.manaClasses[1].defensiveSpells[0].coolDown;
+            magicCast.BasicBlock();
+        }
+    }
+
+
+    void Regeneration()
+    {
+        stats.manaRegenTimer -= Time.deltaTime;
+        stats.healthRegenTimer -= Time.deltaTime;
+
+        if (stats.manaRegenTimer <= 0f)
+        {
+            stats.manaRegenTimer = stats.manaRegenSpeed;
+            stats.RegenerateMana(stats.manaRegen.GetValue());
+        }
+
+
+        if (stats.healthRegenTimer <= 0f)
+        {
+            stats.healthRegenTimer = stats.healthRegenSpeed;
+            stats.RegenerateHealth(stats.healthRegen.GetValue());
+        }
+
     }
     
 
@@ -328,6 +392,28 @@ public class Controller : MonoBehaviour
     }
 
 
+    void AimModifier()
+    {
+        moveInput = moveInput * aimingSpeedMultiplier;
+
+        if (aimDirectionInput != 0)
+        {
+            facingDirection = aimDirectionInput;
+            if (facingDirection >= 0.0f)
+            {
+                transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+            }
+            else
+            {
+                transform.localRotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
+            }
+        }
+
+        Debug.Log("Aiming");
+        Debug.DrawRay(rb.position, aimVector, Color.red);
+    }
+
+
     public void ResetJump()
     {
         jumpRequestTime = 0.0f;
@@ -357,9 +443,23 @@ public class Controller : MonoBehaviour
     }
 
 
+    public void ResetAim()
+    {
+        aimRequest = false;
+        isAiming = false;
+        aimVector = transform.right;
+    }
+
+
     public void ResetBasicAttack()
     {
         basicAttackRequest = false;
+    }
+
+
+    public void ResetBlock()
+    {
+        blockRequest = false;
     }
 
 }

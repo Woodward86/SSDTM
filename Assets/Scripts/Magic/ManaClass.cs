@@ -8,7 +8,8 @@ public class ManaClass : ScriptableObject
 
     new public string name = "New Class";
 
-    public List<Spell> spells = new List<Spell>();
+    public List<Spell> offensiveSpells = new List<Spell>();
+    public List<Spell> defensiveSpells = new List<Spell>();
 
-         
+
 }

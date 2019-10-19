@@ -1,33 +1,33 @@
 ﻿using UnityEngine;
 
-public class Player : Controller
+
+public class PlayerController : Controller
 {
     
     [Header("Input Settings")]
-    public string horizontalCtrl = "Horizontal_P1";
+    public string leftHorizontalCtrl = "L_Horizontal_P1";
+    public string leftVerticalCtrl = "L_Vertical_P1";
+    public string rightHorizontalCtrl = "R_Horizontal_P1";
+    public string rightVerticalCtrl = "R_Vertical_P1";
     public string sprintButton = "Sprint_P1";
     public string jumpButton = "Jump_P1";
     public string crouchButton = "Crouch_P1";
+
+    public string aimButton = "Aim_P1";
+    protected float aimButtonInput;
+
     public string basicAttackButton = "BasicAttack_P1";
+    protected float basicAttackInput;
+
+    public string blockButton = "Block_P1";
 
             
     protected override void GetInput()
     {
-        moveInput = Input.GetAxisRaw(horizontalCtrl);
+        moveInput = Input.GetAxisRaw(leftHorizontalCtrl);
+        aimButtonInput = Input.GetAxisRaw(aimButton);
+        aimDirectionInput = Input.GetAxisRaw(rightHorizontalCtrl);
         basicAttackInput = Input.GetAxisRaw(basicAttackButton);
-
-        if (moveInput != 0)
-        {
-            facingDirection = moveInput;
-            if (facingDirection >= 0.0f)
-            {
-                transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
-            }
-            else
-            {
-                transform.localRotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
-            }
-        }
 
 
         if (moveInput != 0 && Input.GetButton(sprintButton) && isGrounded)
@@ -87,16 +87,40 @@ public class Player : Controller
         }
 
 
-        if (Input.GetButton(basicAttackButton) || basicAttackInput != 0f)
+        if (Input.GetButton(aimButton) || aimButtonInput != 0f)
         {
-            if (basicaAttackRequestTime == 0f)
+            aimRequest = true;
+            isAiming = true;
+            aimVector.x = Input.GetAxisRaw(rightHorizontalCtrl);
+            aimVector.y = Input.GetAxisRaw(rightVerticalCtrl);
+            if (aimRequest && aimVector == Vector3.zero)
             {
-                basicAttackRequest = true;
+                aimVector = transform.right;
             }
         }
         else
         {
+            ResetAim();
+        }
+
+
+        if (Input.GetButton(basicAttackButton) || basicAttackInput != 0f)
+        {
+            basicAttackRequest = true;
+        }
+        else
+        {
             ResetBasicAttack();
+        }
+
+
+        if (Input.GetButton(blockButton))
+        {
+            blockRequest = true;
+        }
+        else
+        {
+            ResetBlock();
         }
                
     }

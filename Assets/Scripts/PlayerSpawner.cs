@@ -48,8 +48,8 @@ public class PlayerSpawner : MonoBehaviour
 
                     int playerNumber = i + 1;
 
-                    playerClone.GetComponent<Player>().jumpButton = "Jump_P" + playerNumber.ToString();
-                    playerClone.GetComponent<Player>().horizontalCtrl = "Horizontal_P" + playerNumber.ToString();
+                    playerClone.GetComponent<PlayerController>().jumpButton = "Jump_P" + playerNumber.ToString();
+                    playerClone.GetComponent<PlayerController>().leftHorizontalCtrl = "L_Horizontal_P" + playerNumber.ToString();
                 }
             }
         }

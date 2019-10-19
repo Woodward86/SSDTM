@@ -10,15 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: aab559a85941dd94ea3f13b2e64e7eea, type: 3}
-  m_Name: FireMaster
+  m_Name: AiClass
   m_EditorClassIdentifier: 
-  name: FireMaster
+  name: aiBlaster
   offensiveSpells:
-  - {fileID: 11400000, guid: 177a3638891e0a643b15adbb80d4c4ac, type: 2}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 96b0f2cce4d002a4ab44dc0e0e26cf7c, type: 2}
   defensiveSpells:
   - {fileID: 11400000, guid: 2ba14403c4dad474c91f8d0b01bddb7d, type: 2}
-  - {fileID: 0}

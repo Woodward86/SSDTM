@@ -2,21 +2,29 @@
 
 public class Projectile : MonoBehaviour
 {
-
+    public string projectileType;
     public float speed;
     public float lifeTime;
     public Rigidbody rb;
 
-    //Auto generated when MagicCast instantiates the pro
+    //Auto generated when MagicCast instantiates the projectile
     public int projectileDamage;
     public CombatController caster;
+    public Vector3 castVector;
 
     private float lifeCounter;
 
 
     void Start()
     {
-        rb.velocity = transform.right * speed;
+        if (projectileType != "Linear")
+        {
+            Debug.Log("Projectile is not linear.");
+        }
+        else
+        {
+            rb.velocity = castVector * speed;
+        }
     }
 
 
@@ -36,3 +44,5 @@ public class Projectile : MonoBehaviour
         }
     }
 }
+
+

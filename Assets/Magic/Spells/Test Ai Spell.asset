@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8d6d73d88a820c647a5b92fc42a54b7f, type: 3}
-  m_Name: Test Spell
+  m_Name: Test Ai Spell
   m_EditorClassIdentifier: 
-  name: Magic Missle
+  name: pewpew
   icon: {fileID: 0}
   projectilePrefab: {fileID: 2961291555754065793, guid: 795dd78f7824f334392f872201a07cda,
     type: 3}
   projectileType: 0
   castPoint: 4
-  isAimable: 1
+  isAimable: 0
   visualEffects: {fileID: 6314486680529223232, guid: 36969ea53e756a44a99f6ba68d6a4e0c,
     type: 3}
   soundEffects: {fileID: 0}
-  damage: 10
-  manaCost: 5
+  damage: 5
+  manaCost: 10
   castTime: 0
-  coolDown: 0.2
-  coolDownTimer: -1.8999988
+  coolDown: 1
+  coolDownTimer: -10.08004
   spellRadius: 0

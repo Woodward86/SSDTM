@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 8010287435161862740}
   - component: {fileID: 839487023233379737}
   m_Layer: 0
-  m_Name: LinearProjectile
+  m_Name: FireBasicAttack
   m_TagString: Spell
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -152,6 +152,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1001d34ca8f4c0f4eb8e2eb64be88ad4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  projectileType: 
   speed: 20
   lifeTime: 1
   rb: {fileID: 535726641808666450}
+  projectileDamage: 0
+  caster: {fileID: 0}
+  castVector: {x: 0, y: 0, z: 0}
