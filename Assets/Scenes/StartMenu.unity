@@ -321,17 +321,17 @@ PrefabInstance:
     - target: {fileID: 5223623772167335996, guid: e90437731185eb149a6dd8130792bdf3,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5.7243347
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5223623772167335996, guid: e90437731185eb149a6dd8130792bdf3,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.8436584
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5223623772167335996, guid: e90437731185eb149a6dd8130792bdf3,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 23.7939
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5223623772167335996, guid: e90437731185eb149a6dd8130792bdf3,
         type: 3}
@@ -373,10 +373,56 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5223623772167335997, guid: e90437731185eb149a6dd8130792bdf3,
+        type: 3}
+      propertyPath: characterGroup
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6258555697567860787, guid: e90437731185eb149a6dd8130792bdf3,
+        type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 7403143044353606961, guid: 93072549d238bb641a2c947ee2f7b303,
+        type: 3}
     - target: {fileID: 2689658942480098436, guid: e90437731185eb149a6dd8130792bdf3,
         type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2984870182019869072, guid: e90437731185eb149a6dd8130792bdf3,
+        type: 3}
+      propertyPath: farOffset.y
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2984870182019869072, guid: e90437731185eb149a6dd8130792bdf3,
+        type: 3}
+      propertyPath: farOffset.z
+      value: -50
+      objectReference: {fileID: 0}
+    - target: {fileID: 2984870182019869072, guid: e90437731185eb149a6dd8130792bdf3,
+        type: 3}
+      propertyPath: closeOffset.z
+      value: -50
+      objectReference: {fileID: 0}
+    - target: {fileID: 2984870182019869072, guid: e90437731185eb149a6dd8130792bdf3,
+        type: 3}
+      propertyPath: closeOffset.y
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2984870182019869072, guid: e90437731185eb149a6dd8130792bdf3,
+        type: 3}
+      propertyPath: closeXOffset
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2984870182019869072, guid: e90437731185eb149a6dd8130792bdf3,
+        type: 3}
+      propertyPath: farXOffset
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2984870182019869072, guid: e90437731185eb149a6dd8130792bdf3,
+        type: 3}
+      propertyPath: xOffsetLimiter
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 2689658942480098436, guid: e90437731185eb149a6dd8130792bdf3, type: 3}
@@ -1298,8 +1344,8 @@ MonoBehaviour:
   m_Script: {fileID: 1077351063, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_HorizontalAxis: Horizontal_P1
-  m_VerticalAxis: Vertical_P1
+  m_HorizontalAxis: L_Horizontal_P1
+  m_VerticalAxis: L_Vertical_P1
   m_SubmitButton: Submit
   m_CancelButton: Cancel
   m_InputActionsPerSecond: 10

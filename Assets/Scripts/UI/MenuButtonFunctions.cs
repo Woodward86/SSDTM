@@ -19,15 +19,15 @@ public class MenuButtonFunctions : MonoBehaviour
     public void SinglePlayerGame()
     {
         Debug.Log("Launching single player game");
-        gameManager.GetComponent<PlayerSpawner>().numberOfPlayers = 1;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        gameManager.GetComponent<GameState>().numberOfPlayers = 1;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 2);
     }
 
 
     public void MultiPlayerGame()
     {
         Debug.Log("Launching multi player game");
-        gameManager.GetComponent<PlayerSpawner>().numberOfPlayers = 2;
+        gameManager.GetComponent<GameState>().numberOfPlayers = 2;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 

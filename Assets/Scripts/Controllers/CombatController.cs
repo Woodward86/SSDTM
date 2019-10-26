@@ -16,7 +16,6 @@ public class CombatController : MonoBehaviour
     {
         if (spell.CompareTag("Spell"))
         {
-            //Debug.Log(spell.name);
             attacker = spell.GetComponent<Projectile>().caster;
             //Debug.Log(attacker);
             if (attacker != null && attacker.name != gameObject.name)
@@ -31,4 +30,5 @@ public class CombatController : MonoBehaviour
     {
         targetStats.TakeDamage(projectileDamage * myStats.spellPower.GetValue());
     }
+
 }

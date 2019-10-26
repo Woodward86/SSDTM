@@ -16,11 +16,11 @@ public class MenuButtonController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetAxis("Vertical_P1") != 0)
+        if (Input.GetAxis("L_Vertical_P1") != 0)
         {
             if (!keyDown)
             {
-                if (Input.GetAxis("Vertical_P1") < 0)
+                if (Input.GetAxis("L_Vertical_P1") < 0)
                 {
                     if (index < maxIndex)
                     {
@@ -31,7 +31,7 @@ public class MenuButtonController : MonoBehaviour
                         index = 0;
                     }
                 }
-                else if (Input.GetAxis("Vertical_P1") > 0)
+                else if (Input.GetAxis("L_Vertical_P1") > 0)
                 {
                     if (index > 0)
                     {

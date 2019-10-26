@@ -9,7 +9,6 @@
 [RequireComponent(typeof(MagicCast))]
 [RequireComponent(typeof(CombatController))]
 
-
 public class Controller : MonoBehaviour
 {
     //setup

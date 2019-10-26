@@ -495,14 +495,22 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7403143044353606961}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 49c877eff55a3764197ede2102bc9969, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraSmooth: 1
+  mainCamera: {fileID: 0}
+  gameState: {fileID: 0}
+  followPlayer: 0
   cameraOffset: {x: 0, y: 3, z: -50}
-  cameraRotation: {x: 0, y: 0, z: 0, w: 0}
+  closeYOffset: 0
+  farYOffset: 0
+  yOffsetLimiter: 0
+  smoothTime: 0.5
+  minZoom: 40
+  maxZoom: 10
+  zoomLimiter: 50
 --- !u!95 &6153612639583362458
 Animator:
   serializedVersion: 3
@@ -529,7 +537,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7403143044353606961}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 627bfb94abafb1d4292994882cf47440, type: 3}
   m_Name: 
@@ -577,10 +585,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
+  healthRegenSpeed: 0
+  healthRegenTimer: 0
+  maxMana: 100
+  manaRegenSpeed: 0
+  manaRegenTimer: 0
   armour:
     baseValue: 0
   spellPower:
     baseValue: 1
+  healthRegen:
+    baseValue: 0
+  manaRegen:
+    baseValue: 0
 --- !u!114 &8394986925650586945
 MonoBehaviour:
   m_ObjectHideFlags: 0

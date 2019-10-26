@@ -8,6 +8,9 @@ TagManager:
   - Main Menu
   - Settings Menu
   - Spell
+  - Character_Grp
+  - Kill_Plane
+  - SpawnPoint
   layers:
   - Default
   - TransparentFX
