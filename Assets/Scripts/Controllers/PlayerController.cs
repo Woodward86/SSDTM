@@ -24,13 +24,17 @@ public class PlayerController : Controller
             
     protected override void GetInput()
     {
-        moveInput = Input.GetAxisRaw(leftHorizontalCtrl);
+        //moveInput = Input.GetAxisRaw(leftHorizontalCtrl);
+        leftXInput = Input.GetAxisRaw(leftHorizontalCtrl);
+        leftYInput = Input.GetAxisRaw(leftVerticalCtrl);
         aimButtonInput = Input.GetAxisRaw(aimButton);
         aimDirectionInput = Input.GetAxisRaw(rightHorizontalCtrl);
         basicAttackInput = Input.GetAxisRaw(basicAttackButton);
 
+        direction = new Vector3(leftXInput, leftYInput);
 
-        if (moveInput != 0 && Input.GetButton(sprintButton) && isGrounded)
+
+        if (direction.x != 0 && Input.GetButton(sprintButton) && cCollisions.isGrounded)
         {
             sprintRequest = true;
         }
@@ -44,11 +48,11 @@ public class PlayerController : Controller
         {
             if (jumpRequestTime == 0f)
             {
-                if (isGrounded || jumpCounter < numberOfJumps)
+                if (cCollisions.isGrounded || jumpCounter < numberOfJumps || isWallSliding || distanceToGround <= preJumpHeight)
                 {
                     jumpRequest = true;
                     jumpCounter++;
-                    isGrounded = false;
+                    cCollisions.isGrounded = false;
                     jumpTimeCounter = jumpTime;
                 }
             }
@@ -76,14 +80,13 @@ public class PlayerController : Controller
         if (Input.GetButton(crouchButton))
         {
             crouchRequest = true;
-            isCrouching = true;
         }
         else
         {
-            if (isCrouching && !isContactAbove)
+            if (crouchRequest && !cCollisions.isContactAbove)
             {
                 ResetCrouch();
-            }            
+            }  
         }
 
 

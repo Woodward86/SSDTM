@@ -417,6 +417,7 @@ GameObject:
   - component: {fileID: 1471005967177371350}
   - component: {fileID: 1630888527871502762}
   - component: {fileID: 6153612639583362458}
+  - component: {fileID: 1662693938333322299}
   - component: {fileID: 7671659472702538543}
   - component: {fileID: 1426263395202338752}
   - component: {fileID: 8394986925650586945}
@@ -530,6 +531,26 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1662693938333322299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7403143044353606961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7278f06a6c80a0b439527ee4e24ce05a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cColl: {fileID: 6681288929352443958}
+  sColl: {fileID: 1471005967177371350}
+  isGrounded: 0
+  isContactAbove: 0
+  isContactRight: 0
+  isContactLeft: 0
+  wallDirection: 0
+  rayLength: 0.1
 --- !u!114 &7671659472702538543
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -547,21 +568,22 @@ MonoBehaviour:
   numberOfJumps: 2
   canWallJump: 0
   wallJumpClimb: {x: 7, y: 12, z: 0}
-  wallJumpOff: {x: 3, y: 1, z: 0}
+  wallJumpOff: {x: 3, y: 0, z: 0}
   wallLeap: {x: 13, y: 13, z: 0}
+  preJumpHeight: 0.5
   fallGravityMultiplier: 5
   lowJumpMultiplier: 3
   walkSpeed: 6
   sprintSpeed: 12
-  aimingSpeedMultiplier: 0.5
+  crouchSpeed: 2
+  aimingSpeed: 3
   wallSlideSpeed: 3
   timeToWallUnstick: 0
-  rayLength: 0.05
   isAiming: 0
   aimVector: {x: 0, y: 0, z: 0}
   accelerationTimeGrounded: 0.1
   accelerationTimeAirborne: 0.2
-  accelerationTouchedDown: 0
+  distanceToGround: 0
   leftHorizontalCtrl: L_Horizontal_P1
   leftVerticalCtrl: L_Vertical_P1
   rightHorizontalCtrl: R_Horizontal_P1

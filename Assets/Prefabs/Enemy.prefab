@@ -354,6 +354,7 @@ GameObject:
   - component: {fileID: 7185840073271504589}
   - component: {fileID: 7185840073271504434}
   - component: {fileID: 7185840073271504435}
+  - component: {fileID: 358116070002980006}
   - component: {fileID: 7185840073271504432}
   - component: {fileID: 7185840073271504433}
   - component: {fileID: 7520855996086054159}
@@ -425,6 +426,26 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: -0.5, z: 0}
+--- !u!114 &358116070002980006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7185840073271504439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7278f06a6c80a0b439527ee4e24ce05a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cColl: {fileID: 7185840073271504434}
+  sColl: {fileID: 7185840073271504435}
+  isGrounded: 0
+  isContactAbove: 0
+  isContactRight: 0
+  isContactLeft: 0
+  wallDirection: 0
+  rayLength: 0.1
 --- !u!114 &7185840073271504432
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -444,19 +465,20 @@ MonoBehaviour:
   wallJumpClimb: {x: 0, y: 0, z: 0}
   wallJumpOff: {x: 0, y: 0, z: 0}
   wallLeap: {x: 0, y: 0, z: 0}
+  preJumpHeight: 0
   fallGravityMultiplier: 5
   lowJumpMultiplier: 3
   walkSpeed: 6
   sprintSpeed: 12
-  aimingSpeedMultiplier: 0.5
+  crouchSpeed: 4
+  aimingSpeed: 3
   wallSlideSpeed: 0
   timeToWallUnstick: 0
-  rayLength: 0.1
   isAiming: 0
   aimVector: {x: 0, y: 0, z: 0}
   accelerationTimeGrounded: 0.1
   accelerationTimeAirborne: 0.2
-  accelerationTouchedDown: 0
+  distanceToGround: 0
   target: {fileID: 0}
   distanceFromTarget: 0
   lookRadius: 10
@@ -473,10 +495,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
+  healthRegenSpeed: 0
+  healthRegenTimer: 0
+  maxMana: 100
+  manaRegenSpeed: 0
+  manaRegenTimer: 0
   armour:
     baseValue: 0
   spellPower:
     baseValue: 1
+  healthRegen:
+    baseValue: 0
+  manaRegen:
+    baseValue: 0
 --- !u!114 &7520855996086054159
 MonoBehaviour:
   m_ObjectHideFlags: 0

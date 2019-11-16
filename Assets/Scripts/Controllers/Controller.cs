@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(CapsuleCollider))]
-[RequireComponent(typeof(SphereCollider))]
+[RequireComponent(typeof(CharacterCollisions))]
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(CharacterStats))]
 [RequireComponent(typeof(Inventory))]
@@ -13,8 +12,8 @@ public class Controller : MonoBehaviour
 {
     //setup
     protected Rigidbody rb;
-    protected CapsuleCollider cColl;
-    protected SphereCollider sColl;
+    protected CharacterCollisions cCollisions;
+
     protected CharacterStats stats;
     protected Inventory inventory;
     protected MagicCast magicCast;
@@ -33,31 +32,28 @@ public class Controller : MonoBehaviour
     public Vector3 wallJumpOff;
     public Vector3 wallLeap;
 
+    public float preJumpHeight;
     public float fallGravityMultiplier = 5.0f;
     public float lowJumpMultiplier = 3.0f;
     public float walkSpeed = 6.0f;
     public float sprintSpeed = 12.0f;
-    public float aimingSpeedMultiplier = .5f;
-    public float wallSlideSpeed;
+    public float crouchSpeed = 4.0f;
+    public float aimingSpeed = 3.0f;
+    public float wallSlideSpeed = 3.0f;
     public float timeToWallUnstick;
 
-    protected float moveInput;
+    protected float leftYInput;
+    protected float leftXInput;
+    protected Vector3 direction;
     protected float facingDirection;
     protected float aimDirectionInput;
     protected bool jumpRequest;
+    protected bool preJumpPress;
     protected int jumpCounter;
     protected float jumpRequestTime;
     protected float jumpTimeCounter;
     protected bool sprintRequest;
     protected bool crouchRequest;
-    protected bool isCrouching;
-    public float rayLength = .1f;
-    protected bool isGrounded;
-    protected float groundedTimeCounter;
-    protected bool isContactAbove;
-    protected bool isContactRight;
-    protected bool isContactLeft;
-    protected int wallDirection;
     protected bool isWallSliding;
     protected float wallStickTime = .25f;
 
@@ -70,26 +66,23 @@ public class Controller : MonoBehaviour
     protected bool blockRequest;
 
 
-    float velocityXSmoothing;
+    protected float velocityXSmoothing;
     public float accelerationTimeGrounded = .1f;
     public float accelerationTimeAirborne = .2f;
-    public float accelerationTouchedDown = .0f;
-    float accelerationTime;
-    float velocityXTarget;
-    float velocityXSmoothed;
-    float distanceToGround;
+    protected float accelerationTime;
+    protected float velocityXTarget;
+    protected float velocityXSmoothed;
+    public float distanceToGround;
 
 
     private void OnEnable()
     {
         rb = GetComponent<Rigidbody>();
-        cColl = GetComponent<CapsuleCollider>();
-        sColl = GetComponent<SphereCollider>();
+        cCollisions = GetComponent<CharacterCollisions>();
         stats = GetComponent<CharacterStats>();
         inventory = GetComponent<Inventory>();
         magicCast = GetComponent<MagicCast>();
         combatC = GetComponent<CombatController>();
-
         animator = GetComponent<Animator>();
     }
 
@@ -123,111 +116,95 @@ public class Controller : MonoBehaviour
 
     void Movement()
     {
-        CollisionTests();
-        //DistanceTests();
+        DistanceTests();
 
-        if (canWallJump)
-        {
-            WallSlidingTest();
-        }
+        velocityXTarget = direction.x * walkSpeed;
 
-
-        if (aimRequest)
-        {
-            AimModifier();
-        }
-        else
-        {
-            if (moveInput != 0)
-            {
-                facingDirection = moveInput;
-                if (facingDirection >= 0.0f)
-                {
-                    transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
-                }
-                else
-                {
-                    transform.localRotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
-                }
-            }
-        }
-
-
-        //TODO walking down and up slopes needs to be fixed
-        velocityXTarget = moveInput * walkSpeed;
-
-        if (isGrounded && groundedTimeCounter < .2f)
-        {
-            accelerationTime = Mathf.SmoothDamp(accelerationTouchedDown, accelerationTimeGrounded, ref velocityXSmoothing, .2f);
-        }
-        else if (isGrounded)
-        {
-            accelerationTime = .1f;
-        }
-        else
-        {
-            accelerationTime = .2f;
-        }
-
-        velocityXSmoothed = Mathf.SmoothDamp(rb.velocity.x, velocityXTarget, ref velocityXSmoothing, accelerationTime);
-        rb.velocity = new Vector3(velocityXSmoothed, rb.velocity.y, rb.velocity.z);
-        //Debug.Log(accelerationTime);
-        //Debug.Log(rb.velocity.x);
+        WallSlidingTest(canWallJump);
         
-        if (sprintRequest && !isCrouching)
+        AimModifier(aimRequest);
+
+        CrouchModifier(crouchRequest);
+
+        SprintModifier(sprintRequest, crouchRequest);
+
+        Walk(direction, velocityXTarget);
+
+        Jump(direction);
+
+        JumpModfier();
+
+        WallSlidingModifier();
+        //Debug.Log("rb.velocity: " + rb.velocity + "velocityXSmoothed: " + velocityXSmoothed + ", velocity smoothing is: " + velocityXSmoothing);
+    }
+
+    //TODO walking down and up slopes needs to be fixed
+    void Walk(Vector3 direction, float speed)
+    {
+        if (distanceToGround > .5f)
         {
-            SprintModifier();
+            accelerationTime = accelerationTimeAirborne;
+        }
+        else
+        {
+            accelerationTime = accelerationTimeGrounded;
         }
 
+        velocityXSmoothed = Mathf.SmoothDamp(rb.velocity.x, speed, ref velocityXSmoothing, accelerationTime);
+        rb.velocity = new Vector3(velocityXSmoothed, rb.velocity.y, rb.velocity.z);
 
-        if (isContactLeft && moveInput < 0.0f || isContactRight && moveInput > 0.0f)
+        if (cCollisions.isContactLeft && direction.x < 0.0f || cCollisions.isContactRight && direction.x > 0.0f)
         {
             rb.velocity = new Vector3(0.0f, rb.velocity.y, rb.velocity.z);
         }
+    }
 
-
+    void Jump(Vector3 direction)
+    {
         if (jumpRequest)
         {
-            rb.velocity = new Vector3(rb.velocity.x, jumpHeight, rb.velocity.z);
-            groundedTimeCounter = 0f;
-            
             if (isWallSliding)
-            { 
-                if (wallDirection == moveInput)
+            {
+                if (cCollisions.wallDirection == direction.x)
                 {
-                    Vector3 forceToAdd = new Vector3(-wallDirection * wallJumpClimb.x, wallJumpClimb.y, rb.velocity.z);
+                    Vector3 forceToAdd = new Vector3(-cCollisions.wallDirection * wallJumpClimb.x, wallJumpClimb.y, rb.velocity.z);
                     rb.AddForce(forceToAdd, ForceMode.Impulse);
                     //Debug.Log("Wall Jump Climb");
                 }
-                else if (moveInput == 0)
+                else if (direction.x == 0)
                 {
-                    Vector3 forceToAdd = new Vector3(-wallDirection * wallJumpOff.x, wallJumpOff.y, rb.velocity.z);
+                    Vector3 forceToAdd = new Vector3(-cCollisions.wallDirection * wallJumpOff.x, wallJumpOff.y, rb.velocity.z);
                     rb.AddForce(forceToAdd, ForceMode.Impulse);
                     //Debug.Log("Wall Jump Off");
                 }
                 else
                 {
-                    Vector3 forceToAdd = new Vector3(-wallDirection * wallLeap.x, wallLeap.y, rb.velocity.z);
+                    Vector3 forceToAdd = new Vector3(-cCollisions.wallDirection * wallLeap.x, wallLeap.y, rb.velocity.z);
                     rb.AddForce(forceToAdd, ForceMode.Impulse);
                     //Debug.Log("Wall Leap");
                 }
             }
+            else if (rb.velocity.y < 0 && distanceToGround <= preJumpHeight)
+            {
+                preJumpPress = true;
+                if (preJumpPress && cCollisions.isGrounded)
+                {
+                    rb.velocity = new Vector3(rb.velocity.x, jumpHeight, rb.velocity.z);
+                    Debug.Log("Premature Jump!");
+                    preJumpPress = false;
+                }
+            }
+            else
+            {
+                rb.velocity = new Vector3(rb.velocity.x, jumpHeight, rb.velocity.z);
+            }
         }
-
-
-        if (crouchRequest)
-        {
-            CrouchModifier();
-        }
-
-        
-        JumpModfier();
-        WallSlidingModifier();
     }
 
-
+    //TODO move this onto it's own component or onto the combatController
     void Combat()
     {
+        //TODO look at using coroutines for these timers instead
         inventory.manaClasses[0].offensiveSpells[0].coolDownTimer -= Time.deltaTime;
         inventory.manaClasses[1].defensiveSpells[0].coolDownTimer -= Time.deltaTime;
 
@@ -249,9 +226,10 @@ public class Controller : MonoBehaviour
         }
     }
 
-
+    //TODO move this onto it's own component
     void Regeneration()
     {
+        //TODO look at using coroutines for these timers instead
         stats.manaRegenTimer -= Time.deltaTime;
         stats.healthRegenTimer -= Time.deltaTime;
 
@@ -269,65 +247,46 @@ public class Controller : MonoBehaviour
         }
 
     }
+
     
-
-    //TODO Check out cast method to see how collisions feel or make .1f a higher number to make collision happen a little earlier
-    //TODO Need to turn each of these into 3 rays(left, center, right)(top, center, bottom)
-    void CollisionTests()
+    void DistanceTests()
     {
-        isGrounded = Physics.Raycast(transform.position + sColl.center, Vector3.down, sColl.bounds.extents.y + rayLength);
-        isContactAbove = Physics.Raycast(transform.position + cColl.center, Vector3.up, cColl.bounds.extents.y + rayLength);
-        isContactRight = Physics.Raycast(transform.position + cColl.center, Vector3.right, cColl.bounds.extents.x + rayLength);
-        isContactLeft = Physics.Raycast(transform.position + cColl.center, Vector3.left, cColl.bounds.extents.x + rayLength);
-
-        if (isCrouching)
+        //TODO the Vector3.down in this should be replaced with a vector when added to transform.position results in zero
+        if(!cCollisions.isGrounded)
         {
-            isContactAbove = Physics.Raycast(transform.position + sColl.center, Vector3.up, sColl.bounds.extents.y + rayLength);
-            isContactRight = Physics.Raycast(transform.position + sColl.center, Vector3.right, sColl.bounds.extents.x + rayLength);
-            isContactLeft = Physics.Raycast(transform.position + sColl.center, Vector3.left, sColl.bounds.extents.x + rayLength);
-        }
-        
-        if (isGrounded)
-        {
-            jumpCounter = 1;
-            groundedTimeCounter += Time.deltaTime;
-        }
-
-        if (isContactLeft)
-        {
-            wallDirection = -1;
-        }
-        else if (isContactRight)
-        {
-            wallDirection = 1;
+            RaycastHit downHit;
+            if (Physics.Raycast(transform.position + Vector3.down, Vector3.down, out downHit))
+                distanceToGround = downHit.distance;
+                Debug.DrawRay(transform.position + Vector3.down, Vector3.down * downHit.distance, Color.yellow);
+                //Debug.Log("Distance from ground is: " + downHit.distance);
         }
         else
         {
-            wallDirection = 0;
+            distanceToGround = 0f;
         }
+
     }
 
 
-    void DistanceTests()
+    void WallSlidingTest(bool canWallJump)
     {
-        RaycastHit downHit;
-        if (Physics.Raycast(transform.position, Vector3.down, out downHit))
-            distanceToGround = downHit.distance;
-            //Debug.Log("Distance from ground is: " + downHit.distance);
-    }
-
-
-    void WallSlidingTest()
-    {
-        if ((isContactLeft || isContactRight) && !isGrounded)
+        if (canWallJump)
         {
-            isWallSliding = true;
-
-            if (timeToWallUnstick > 0)
+            if ((cCollisions.isContactLeft || cCollisions.isContactRight) && !cCollisions.isGrounded)
             {
-                if (moveInput != wallDirection && moveInput != 0)
+                isWallSliding = true;
+                jumpCounter = 1;
+
+                if (timeToWallUnstick > 0)
                 {
-                    timeToWallUnstick -= Time.deltaTime;
+                    if (direction.x != cCollisions.wallDirection && direction.x != 0)
+                    {
+                        timeToWallUnstick -= Time.deltaTime;
+                    }
+                    else
+                    {
+                        timeToWallUnstick = wallStickTime;
+                    }
                 }
                 else
                 {
@@ -336,13 +295,12 @@ public class Controller : MonoBehaviour
             }
             else
             {
-                timeToWallUnstick = wallStickTime;
+                ResetWallSlide();
             }
-            jumpCounter = 1;
         }
         else
         {
-            ResetWallSlide();
+            return;
         }
     }
 
@@ -351,20 +309,18 @@ public class Controller : MonoBehaviour
     {
         if (isWallSliding)
         {
-            if (rb.velocity.y < -wallSlideSpeed)
-            {
-                rb.velocity = Vector3.up * Physics.gravity.y * wallSlideSpeed * Time.deltaTime;
-            }
-            if (timeToWallUnstick > 0)
-            {
-                rb.velocity = new Vector3(0.0f, Physics.gravity.y * wallSlideSpeed * Time.deltaTime, rb.velocity.z);
-            }
+            rb.velocity = new Vector3(0.0f, Physics.gravity.y * wallSlideSpeed * Time.deltaTime, rb.velocity.z);
+        }
+        else
+        {
+            return;
         }
     }
 
 
     void JumpModfier()
     {
+        //Gravity
         if (rb.velocity.y < 0)
         {
             rb.velocity += Physics.gravity * (fallGravityMultiplier - 1) * Time.deltaTime;
@@ -376,47 +332,81 @@ public class Controller : MonoBehaviour
     }
 
 
-    void SprintModifier()
+    void SprintModifier(bool sprintRequest, bool isCrouching)
     {
-        velocityXTarget = moveInput * sprintSpeed;
-        velocityXSmoothed = Mathf.SmoothDamp(rb.velocity.x, velocityXTarget, ref velocityXSmoothing, accelerationTime);
-        rb.velocity = new Vector3(velocityXSmoothed, rb.velocity.y, rb.velocity.z);
-    }
-
-
-    void CrouchModifier()
-    {
-        animator.SetBool("crouchPressed", true);
-        cColl.enabled = false;
-    }
-
-
-    void AimModifier()
-    {
-        moveInput = moveInput * aimingSpeedMultiplier;
-
-        if (aimDirectionInput != 0)
+        if (sprintRequest && !isCrouching)
         {
-            facingDirection = aimDirectionInput;
-            if (facingDirection >= 0.0f)
+            velocityXTarget = direction.x * sprintSpeed;
+        }
+        else
+        {
+            return;
+        }
+    }
+
+
+    void CrouchModifier(bool crouchRequest)
+    {
+        if (crouchRequest)
+        {
+            velocityXTarget = direction.x * crouchSpeed;
+            animator.SetBool("crouchPressed", true);
+            cCollisions.cColl.enabled = false;
+        }
+        else
+        {
+            return;
+        }
+    }
+
+
+    void AimModifier(bool aimRequest)
+    {
+        if (aimRequest)
+        {
+            velocityXTarget = direction.x * aimingSpeed;
+
+            if (aimDirectionInput != 0)
             {
-                transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+                facingDirection = aimDirectionInput;
+                if (facingDirection >= 0.0f)
+                {
+                    transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+                }
+                else
+                {
+                    transform.localRotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
+                }
             }
-            else
+            Debug.DrawRay(rb.position, aimVector, Color.red);
+        }
+        else
+        {
+            if (direction.x != 0)
             {
-                transform.localRotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
+                facingDirection = direction.x;
+                if (facingDirection >= 0.0f)
+                {
+                    transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+                }
+                else
+                {
+                    transform.localRotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
+                }
             }
         }
-
-        Debug.Log("Aiming");
-        Debug.DrawRay(rb.position, aimVector, Color.red);
     }
 
 
     public void ResetJump()
     {
-        jumpRequestTime = 0.0f;
         jumpRequest = false;
+        jumpRequestTime = 0.0f;
+        if(cCollisions.isGrounded)
+        {
+            jumpCounter = 0;
+            jumpTimeCounter = 0f;
+        }
     }
 
 
@@ -429,16 +419,15 @@ public class Controller : MonoBehaviour
     public void ResetCrouch()
     {
         crouchRequest = false;
-        isCrouching = false;
-        cColl.enabled = true;
+        cCollisions.cColl.enabled = true;
         animator.SetBool("crouchPressed", false);
     }
 
 
     public void ResetWallSlide()
     {
-        timeToWallUnstick = 0f;
         isWallSliding = false;
+        timeToWallUnstick = 0f;
     }
 
 

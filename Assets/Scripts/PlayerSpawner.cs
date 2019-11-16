@@ -15,8 +15,7 @@ public class PlayerSpawner : MonoBehaviour
             {
                 for (int i = 0; i < numberOfPlayers; i++)
                 {
-                    GameObject playerClone = Instantiate(player, spawnPoints[i].transform.position, Quaternion.identity);
-                    playerClone.transform.parent = characterGroup.transform;
+                    GameObject playerClone = Instantiate(player, spawnPoints[i].transform.position, Quaternion.identity, characterGroup.transform);
 
                     int playerNumber = i + 1;
 

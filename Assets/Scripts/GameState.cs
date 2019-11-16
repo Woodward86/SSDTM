@@ -17,6 +17,8 @@ public class GameState : MonoBehaviour
     public GameObject player;
     private bool isStarted = false;
 
+    public List<GameObject> characters = new List<GameObject>();
+
 
     private void Awake()
     {
